@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Hello World</title>
+         <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    </head>
+    <body>
+        
+	<form method="post" id="formulario">
+	<table>
+	<tr>
+	<td>Introduce un valor</td><td><input type="text" name="valor" id="caja"></td>
+	<td></td><td><input type="button" id="btn_enviar" value="Enviar valor"></td>
+	</tr>
+	</table>
+	</form>
+        
+        
+        <p>Consultar registros con ajax</p>
+        <form name="consulta" action="" onsubmit="MostrarConsulta('http://proyectoiot.esy.es/lee.php'); return false">
+        <label>
+        <input type="submit" value="Consultar" />
+        </label>
+        
+        </form>
+        
+        
+        <div id="resultado">
+            <div><ul id="lista"></ul></div>
+        </div>        
+        
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript">
+            
+        </script>
+        
+        	<script>  
+	$(function(){
+	 $("#btn_enviar").click(function(){
+	 var url = "http://proyectoiot.esy.es/index.php";  
+	    $.ajax({
+	           type: "POST",
+	           url: url,
+	           data:  $("#formulario").serialize(),
+	    });
+	    //alert('Valor enviado');
+	    $('#caja').val("");
+	    return false; // Evitar ejecutar el submit del formulario.
+	   
+	 });
+
+	});
+        
+        
+        
+        
+        
+        
+        
+        function objetoAjax(){
+        var xmlhttp=false;
+        try {
+               xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+        } catch (e) {
+               try {
+                  xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+               } catch (E) {
+                       xmlhttp = false;
+               }
+        }
+        if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
+               xmlhttp = new XMLHttpRequest();
+        }
+        return xmlhttp;
+}
+
+ 
+        var micadena="";
+        function MostrarConsulta(datos){
+                divResultado = document.getElementById('resultado');
+                ajax=objetoAjax();
+                ajax.open("GET", datos);
+                ajax.onreadystatechange=function() {
+                       if (ajax.readyState==4) {
+                               //divResultado.innerHTML = ajax.responseText;
+                               micadena=ajax.responseText;
+                               miproceso();
+                       }
+                }
+                ajax.send(null);
+                
+        }
+        
+        function miproceso(){
+            divResultado = document.getElementById('resultado');
+            $("#lista").empty();  
+            micadena=micadena.replace("[", "");
+            micadena=micadena.replace("]", "");
+            
+            var text = '{ "valores" : [' + micadena+']}';
+            //alert (text);   //esta es la cadena convertida en json
+            var obj = JSON.parse(text);
+            var x=0;
+            //alert ((obj.valores).length);
+            //divResultado.innerHTML = obj.valores;
+            
+            
+            
+            for (i = 0; i < (obj.valores).length; i++) {
+             var item='<li> ID: '+obj.valores[i].id+' Valor: '+obj.valores[i].valor+'  Fecha:  '+obj.valores[i].fecha+'</li>';
+            $("#lista").append(item);
+            }
+            //alert('Id: '+obj.valores[x].id+'   valor:  '+obj.valores[x].valor+'   fecha:  '+obj.valores[x].fecha);
+            
+
+        }
+                
+                
+                
+        
+        
+	</script>
+    </body>
+</html>
